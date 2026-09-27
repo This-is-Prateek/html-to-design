@@ -2,6 +2,10 @@ import * as esbuild from "esbuild";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 
 const watch = process.argv.includes("--watch");
+
+// Figma refuses to start plugins whose manifest id isn't numeric ("error while loading the plugin environment").
+const manifest = JSON.parse(await readFile("manifest.json", "utf8"));
+if (!/^\d+$/.test(manifest.id)) throw new Error(`manifest.json id must be the numeric ID Figma assigns, got "${manifest.id}"`);
 await mkdir("dist", { recursive: true });
 
 const common = { bundle: true, minify: !watch, sourcemap: false, logLevel: "info" };

@@ -1,6 +1,6 @@
 {
   "name": "HTML to Design",
-  "id": "REPLACE_WITH_FIGMA_PLUGIN_ID",
+  "id": "1000000000000000001",
   "api": "1.0.0",
   "main": "dist/code.js",
   "ui": "dist/ui.html",
