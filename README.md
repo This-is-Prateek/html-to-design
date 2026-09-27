@@ -51,7 +51,7 @@ E2E artefacts (IR JSON, source/IR screenshots, diff images) are written to `test
 
 ## Publishing checklist (Figma Community)
 
-- [ ] Create the plugin in Figma (*Plugins → Development → New plugin*) and copy its ID into `manifest.json` → `id`.
+- [ ] Create the plugin in Figma (*Plugins → Development → New plugin*) and copy its numeric ID into `manifest.json` → `id`. The current `1000000000000000001` is a local-development placeholder; Figma rejects non-numeric IDs with "An error occurred while loading the plugin environment".
 - [ ] Icon 128×128 and cover 1920×1080 (not in repo).
 - [ ] Listing description: include the "Known limits" section above and state that nothing leaves the machine.
 - [ ] `npm run build`, then publish from Figma Desktop (*Plugins → Development → Publish*).
