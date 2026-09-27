@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <style>/*__CSS__*/</style>
+  </head>
+  <body>
+    <main>
+      <section class="field">
+        <div class="row">
+          <label for="html">HTML</label>
+          <label class="file">
+            Upload files…
+            <input id="files" type="file" multiple accept=".html,.htm,.css,image/*,.svg" />
+          </label>
+        </div>
+        <textarea id="html" spellcheck="false" placeholder="Paste HTML here, including any &lt;style&gt; blocks"></textarea>
+        <p id="file-info" class="hint" hidden></p>
+      </section>
+
+      <details class="field">
+        <summary>Additional CSS (optional)</summary>
+        <textarea id="css" spellcheck="false" placeholder=".card { border-radius: 12px; }"></textarea>
+      </details>
+
+      <section class="field">
+        <span class="label">Viewports</span>
+        <div class="viewports">
+          <label><input type="checkbox" name="vp" value="1440" data-h="900" checked /> Desktop 1440</label>
+          <label><input type="checkbox" name="vp" value="768" data-h="1024" /> Tablet 768</label>
+          <label><input type="checkbox" name="vp" value="375" data-h="812" /> Mobile 375</label>
+          <label class="custom"><input type="checkbox" id="vp-custom" /> Custom <input id="vp-custom-w" type="number" min="200" max="3840" value="1280" /> px</label>
+        </div>
+      </section>
+
+      <div class="actions">
+        <button id="convert" class="primary">Convert to Figma</button>
+        <button id="cancel" hidden>Cancel</button>
+      </div>
+
+      <div id="progress" hidden><div class="bar"><span></span></div><p class="hint"></p></div>
+      <div id="report" hidden></div>
+
+      <p class="hint footer">Runs entirely on your machine. Scripts in the HTML are not executed; remote stylesheets, fonts and images are not fetched. Upload referenced CSS and images alongside the HTML file.</p>
+    </main>
+    <script>/*__JS__*/</script>
+  </body>
+</html>

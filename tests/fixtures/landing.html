@@ -1,0 +1,46 @@
+<!doctype html>
+<html><head><title>Landing</title><style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Arial, sans-serif; color: #111827; }
+  nav { display: flex; align-items: center; justify-content: space-between; padding: 16px 48px; border-bottom: 1px solid #e5e7eb; }
+  .logo { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 18px; }
+  .links a { margin-left: 24px; color: #374151; text-decoration: none; font-size: 14px; }
+  .links a.active::after { content: ""; display: block; height: 2px; background: #2563eb; margin-top: 4px; }
+  .hero { display: flex; gap: 48px; padding: 72px 48px; background: #0f172a; color: #f8fafc; align-items: center; }
+  .hero h1 { font-size: 44px; line-height: 1.15; margin: 0 0 16px; }
+  .hero p { font-size: 18px; color: #cbd5e1; margin: 0 0 24px; line-height: 1.5; }
+  .hero img { width: 320px; height: 200px; object-fit: cover; border-radius: 16px; }
+  .tag::before { content: "★ "; color: #facc15; }
+  form { display: flex; gap: 8px; }
+  input[type=email] { width: 260px; height: 44px; padding: 0 14px; border: 1px solid #334155; border-radius: 8px; background: #1e293b; color: #fff; font-size: 15px; }
+  input::placeholder { color: #94a3b8; }
+  button { height: 44px; padding: 0 18px; border-radius: 8px; border: 0; background: #2563eb; color: #fff; font-weight: 700; font-size: 15px; }
+  .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; padding: 56px 48px; }
+  .feature { border: 1px solid #e5e7eb; border-radius: 12px; padding: 24px; }
+  .feature h3 { margin: 12px 0 8px; font-size: 18px; }
+  .feature p { margin: 0; color: #4b5563; font-size: 14px; line-height: 1.6; }
+  .icon { width: 32px; height: 32px; color: #2563eb; }
+  .hidden { display: none; }
+  label { display: flex; gap: 8px; align-items: center; font-size: 14px; padding: 0 48px 48px; }
+</style></head><body>
+  <nav>
+    <div class="logo"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M8 12l3 3 5-6" stroke="#fff" stroke-width="2" fill="none"/></svg>Acme</div>
+    <div class="links"><a class="active" href="#">Product</a><a href="#">Pricing</a><a href="#">Docs</a></div>
+  </nav>
+  <section class="hero">
+    <div>
+      <p class="tag">Rated 4.9 by teams</p>
+      <h1>Ship designs from real HTML</h1>
+      <p>Paste markup, pick a viewport and get editable Figma layers that match the browser.</p>
+      <form><input type="email" placeholder="you@company.com"><button type="button">Get started</button></form>
+    </div>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAAGklEQVR4nGP4z8AAR0jM/wxUlEDmoCqimgQA6TA/wXDrFcoAAAAASUVORK5CYII=" alt="checker">
+  </section>
+  <section class="features">
+    <div class="feature"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="4"/></svg><h3>Local only</h3><p>Nothing leaves your machine. No servers, no uploads.</p></div>
+    <div class="feature"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h16M12 4v16"/></svg><h3>Faithful</h3><p>Fonts, sizes, colors and positions come from the browser's own layout.</p></div>
+    <div class="feature hidden"><h3>Hidden</h3></div>
+    <div class="feature"><svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg><h3>Responsive checks</h3><p>Render at desktop, tablet and mobile widths in one go.</p></div>
+  </section>
+  <label><input type="checkbox" checked> Email me product updates</label>
+</body></html>

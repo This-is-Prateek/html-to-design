@@ -1,0 +1,28 @@
+<!doctype html>
+<html><head><title>Cards</title><style>
+  :root { --brand: oklch(0.55 0.2 260); --radius: 12px; }
+  body { margin: 0; background: #f8fafc; font-family: Arial, sans-serif; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; padding: 40px; }
+  .card { background: #fff; border-radius: var(--radius); box-shadow: 0 1px 3px rgba(0,0,0,.1), 0 8px 24px rgba(15,23,42,.08); overflow: hidden; }
+  .media { height: 140px; background: linear-gradient(135deg, #6366f1 0%, #ec4899 100%); }
+  .media.b { background: linear-gradient(to right, #0ea5e9, #22c55e); }
+  .media.c { background: radial-gradient(circle, #fde68a, #f59e0b); }
+  .body { padding: 20px; }
+  .title { font-size: 18px; font-weight: 700; margin: 0 0 6px; color: #0f172a; }
+  .meta { font-size: 14px; color: #64748b; margin: 0; }
+  .row { display: flex; gap: 8px; align-items: center; margin-top: 16px; }
+  .badge { display: inline-block; background: color-mix(in srgb, var(--brand) 15%, white); color: var(--brand); border-radius: 999px; padding: 4px 10px; font-size: 12px; font-weight: 600; }
+  .btn { margin-left: auto; background: var(--brand); color: #fff; border: 0; border-radius: 8px; padding: 8px 14px; font: 600 14px Arial, sans-serif; }
+  .outline { border: 2px solid #e2e8f0; border-left: 6px solid var(--brand); background: #fff; padding: 20px; margin: 0 40px 40px; border-radius: 4px 16px 4px 16px; }
+  .abs { position: relative; height: 80px; margin: 0 40px; background: #e2e8f0; }
+  .abs span { position: absolute; right: 12px; top: 12px; width: 40px; height: 40px; background: #ef4444; border-radius: 50%; z-index: 2; }
+  .abs i { position: absolute; right: 32px; top: 20px; width: 40px; height: 40px; background: #3b82f6; }
+</style></head><body>
+  <div class="grid">
+    <div class="card"><div class="media"></div><div class="body"><p class="title">Card one</p><p class="meta">Linear 135deg gradient</p><div class="row"><span class="badge">New</span><button class="btn">Open</button></div></div></div>
+    <div class="card"><div class="media b"></div><div class="body"><p class="title">Card two</p><p class="meta">Left to right gradient</p><div class="row"><span class="badge">Beta</span><button class="btn">Open</button></div></div></div>
+    <div class="card"><div class="media c"></div><div class="body"><p class="title">Card three</p><p class="meta">Radial gradient</p><div class="row"><span class="badge">Pro</span><button class="btn">Open</button></div></div></div>
+  </div>
+  <div class="outline">Per-side borders and per-corner radii</div>
+  <div class="abs"><span></span><i></i></div>
+</body></html>
