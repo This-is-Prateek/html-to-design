@@ -1,6 +1,6 @@
 import type { IRDocument, MainToUI, UIToMain } from "../shared/ir";
 import { htmlToIR } from "./extract";
-import { type LocalAsset, prepareHtml, readFiles } from "./prepare";
+import { type LocalAsset, hasScripts, prepareHtml, preRenderScripts, readFiles } from "./prepare";
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const htmlInput = $<HTMLTextAreaElement>("html");
@@ -62,7 +62,7 @@ function showReport(html: string) {
 }
 
 convertBtn.addEventListener("click", async () => {
-  const html = htmlInput.value.trim();
+  let html = htmlInput.value.trim();
   const vps = viewports();
   report.hidden = true;
   if (!html) return showReport(`<p class="error">Paste HTML or upload an .html file first.</p>`);
@@ -70,6 +70,12 @@ convertBtn.addEventListener("click", async () => {
 
   setBusy(true);
   try {
+    // If the HTML contains inline <script> tags, pre-render them in a sandboxed
+    // iframe first so JS-generated DOM content is captured before extraction.
+    if (hasScripts(html)) {
+      setProgress(0, "Executing scripts…");
+      html = await preRenderScripts(html);
+    }
     const source = prepareHtml(html, cssInput.value, assets);
     const docs: IRDocument[] = [];
     for (const [i, vp] of vps.entries()) {

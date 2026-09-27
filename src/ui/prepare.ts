@@ -33,11 +33,66 @@ export async function readFiles(files: FileList | File[]): Promise<{ html: strin
 
 /** Rewrites url(...) references in CSS to uploaded files' data URLs. */
 export function rewriteCssUrls(css: string, assets: Map<string, LocalAsset>): string {
-  return css.replace(/url\(\s*(["']?)([^"')]+)\1\s*\)/g, (m, _q, url: string) => {
+  return css.replace(/url\(\s*(['"]?)([^"')]+)\1\s*\)/g, (m, _q, url: string) => {
     if (url.startsWith("data:") || isRemote(url)) return m;
     const a = assets.get(basename(url));
     return a?.dataUrl ? `url("${a.dataUrl}")` : m;
   });
+}
+
+/** Returns true if the HTML contains inline <script> tags with meaningful content. */
+export function hasScripts(html: string): boolean {
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  for (const s of doc.querySelectorAll("script")) {
+    // Ignore empty scripts and external-only scripts (src won't load in sandbox anyway)
+    const text = s.textContent?.trim();
+    if (text && text.length > 0) return true;
+  }
+  return false;
+}
+
+/**
+ * Pre-renders HTML in a sandboxed iframe with scripts enabled, waits for JS to
+ * execute, then snapshots the resulting DOM as static HTML.  This lets us capture
+ * content that is generated dynamically (e.g. template-literal–driven pages).
+ *
+ * The iframe uses sandbox="allow-scripts allow-same-origin" — scripts run in an
+ * isolated sandbox and cannot access the parent page's DOM or storage.
+ * After snapshotting we immediately remove the iframe.
+ */
+export async function preRenderScripts(html: string): Promise<string> {
+  const iframe = document.createElement("iframe");
+  iframe.setAttribute("sandbox", "allow-scripts allow-same-origin");
+  Object.assign(iframe.style, {
+    position: "fixed",
+    left: "-100000px",
+    top: "0",
+    width: "1920px",
+    height: "1200px",
+    border: "0",
+    pointerEvents: "none",
+  });
+
+  const loaded = new Promise<void>((res) =>
+    iframe.addEventListener("load", () => res(), { once: true }),
+  );
+  iframe.srcdoc = html;
+  document.body.appendChild(iframe);
+  await loaded;
+
+  // Give scripts a moment to run.  requestAnimationFrame + a short delay
+  // covers synchronous DOM generation and micro-task-based rendering.
+  await new Promise<void>((res) => {
+    const win = iframe.contentWindow!;
+    win.requestAnimationFrame(() => setTimeout(res, 200));
+  });
+
+  const doc = iframe.contentDocument!;
+
+  // Snapshot the fully-rendered DOM back to an HTML string.
+  const result = "<!doctype html>\n" + doc.documentElement.outerHTML;
+  iframe.remove();
+  return result;
 }
 
 export function prepareHtml(html: string, extraCss: string, assets: Map<string, LocalAsset>): string {

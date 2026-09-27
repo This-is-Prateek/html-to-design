@@ -7,10 +7,11 @@ Paste or upload HTML/CSS and get Figma frames that match the browser rendering. 
 ```
 Plugin UI (Chromium iframe)                          Main thread (Figma sandbox)
 ┌──────────────────────────────────────────┐        ┌─────────────────────────────┐
-│ prepare.ts  inline uploaded CSS/images   │        │ fonts.ts  resolve + load    │
-│ render.ts   hidden <iframe srcdoc>,      │  IR    │ build.ts  frames, text,     │
-│             no scripts, per viewport     │ ─────▶ │           SVG, images       │
-│ extract/*   DOM + computed styles → IR   │        │ code.ts   progress, report  │
+│ prepare.ts  pre-render inline scripts,   │        │ fonts.ts  resolve + load    │
+│             inline uploaded CSS/images   │  IR    │ build.ts  frames, text,     │
+│ render.ts   hidden <iframe srcdoc>,      │ ─────▶ │           SVG, images       │
+│             no scripts, per viewport     │        │ code.ts   progress, report  │
+│ extract/*   DOM + computed styles → IR   │        │                             │
 └──────────────────────────────────────────┘        └─────────────────────────────┘
 ```
 
@@ -41,7 +42,7 @@ E2E artefacts (IR JSON, source/IR screenshots, diff images) are written to `test
 
 ## Known limits (v1)
 
-- **No JavaScript execution**, by design (safety and deterministic output). Paste the *rendered* HTML of JS apps, e.g. "Copy outerHTML" from DevTools.
+- **Inline scripts are pre-executed** in a sandboxed iframe so that JS-generated DOM content is captured. External scripts (loaded via `src`) are not fetched. For complex JS apps the result depends on synchronous DOM generation completing within ~200ms.
 - **No network**: remote stylesheets, web fonts and images are not fetched. Upload them alongside the HTML instead.
 - **Absolute layout only**: the output is visually faithful but not Auto Layout.
 - **Colors and fonts are raw values**: no Variables or Styles are created.
