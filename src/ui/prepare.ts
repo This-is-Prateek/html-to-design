@@ -61,6 +61,14 @@ export function hasScripts(html: string): boolean {
  * After snapshotting we immediately remove the iframe.
  */
 export async function preRenderScripts(html: string): Promise<string> {
+  // External scripts cannot be fetched by the plugin. Remove them before the
+  // iframe is loaded so a failed request cannot hold its load event open.
+  const source = new DOMParser().parseFromString(html, "text/html");
+  for (const script of source.querySelectorAll<HTMLScriptElement>("script[src]")) {
+    if (!script.textContent?.trim()) script.remove();
+    else script.removeAttribute("src");
+  }
+
   const iframe = document.createElement("iframe");
   iframe.setAttribute("sandbox", "allow-scripts allow-same-origin");
   Object.assign(iframe.style, {
@@ -73,26 +81,30 @@ export async function preRenderScripts(html: string): Promise<string> {
     pointerEvents: "none",
   });
 
-  const loaded = new Promise<void>((res) =>
-    iframe.addEventListener("load", () => res(), { once: true }),
-  );
-  iframe.srcdoc = html;
-  document.body.appendChild(iframe);
-  await loaded;
+  try {
+    const loaded = new Promise<void>((resolve) => {
+      iframe.addEventListener("load", () => resolve(), { once: true });
+      // Never leave conversion waiting indefinitely for an iframe lifecycle
+      // event. The document is still usable when this fallback wins.
+      window.setTimeout(resolve, 1_000);
+    });
+    iframe.srcdoc = "<!doctype html>\n" + source.documentElement.outerHTML;
+    document.body.appendChild(iframe);
+    await loaded;
 
-  // Give scripts a moment to run.  requestAnimationFrame + a short delay
-  // covers synchronous DOM generation and micro-task-based rendering.
-  await new Promise<void>((res) => {
-    const win = iframe.contentWindow!;
-    win.requestAnimationFrame(() => setTimeout(res, 200));
-  });
+    // Use the plugin UI's timer, not a function from the imported page. A page
+    // can replace or suppress its own requestAnimationFrame implementation,
+    // and Chromium may throttle frames for an off-screen iframe.
+    await new Promise<void>((resolve) => window.setTimeout(resolve, 200));
 
-  const doc = iframe.contentDocument!;
+    const doc = iframe.contentDocument;
+    if (!doc?.documentElement) throw new Error("Script pre-render did not create a document");
 
-  // Snapshot the fully-rendered DOM back to an HTML string.
-  const result = "<!doctype html>\n" + doc.documentElement.outerHTML;
-  iframe.remove();
-  return result;
+    // Snapshot the fully-rendered DOM back to an HTML string.
+    return "<!doctype html>\n" + doc.documentElement.outerHTML;
+  } finally {
+    iframe.remove();
+  }
 }
 
 export function prepareHtml(html: string, extraCss: string, assets: Map<string, LocalAsset>): string {

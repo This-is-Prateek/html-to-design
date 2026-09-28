@@ -70,3 +70,22 @@ test("plugin UI inlines uploaded CSS and images", async ({ page }) => {
   expect(Object.keys(doc.images)).toHaveLength(1);
   expect(doc.unsupported).toEqual([]);
 });
+
+test("inline scripts cannot stall conversion by suppressing animation frames", async ({ page }) => {
+  await page.addInitScript(() => {
+    (window as any).__sent = [];
+    (window as any).parent = { postMessage: (m: unknown) => (window as any).__sent.push(m) };
+  });
+  await page.goto(pathToFileURL(resolve("dist/ui.html")).href);
+  await page.fill(
+    "#html",
+    `<main></main><script>requestAnimationFrame=()=>{};document.querySelector('main').textContent='Generated';</script>`,
+  );
+
+  await page.click("#convert");
+  await expect.poll(() => page.evaluate(() => (window as any).__sent.length), { timeout: 3_000 }).toBe(1);
+
+  const msg = await page.evaluate(() => (window as any).__sent[0].pluginMessage);
+  expect(msg.type).toBe("build");
+  expect(JSON.stringify(msg.docs[0].root)).toContain('"characters":"Generated"');
+});
